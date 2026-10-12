@@ -1,13 +1,12 @@
-import { computed, onScopeDispose, reactive, ref, watch } from 'vue'
-import { agendarTransferencia, consultarTaxa } from './agendamento.api'
-import type { PreviaTaxa, Transferencia } from '@/shared/types/transferencia'
-import { DIAS_MAXIMOS } from '@/shared/domain/faixasTaxa'
+import { computed, reactive, ref } from 'vue'
+import { agendarTransferencia } from './agendamento.api'
+import type { Transferencia } from '@/shared/types/transferencia'
+import { calcularTaxa, diasMaximos, encontrarFaixa } from '@/shared/domain/faixasTaxa'
+import { useFaixasTaxa } from '@/shared/domain/useFaixasTaxa'
 import { ErroApi } from '@/shared/api/http'
-import { hojeISO, somarDias } from '@/shared/utils/datas'
+import { diasEntre, hojeISO, somarDias } from '@/shared/utils/datas'
 
 const DIGITOS_DA_CONTA = 10
-// Espera a pessoa parar de digitar o valor antes de pedir a prévia ao servidor.
-export const ESPERA_DA_PREVIA_MS = 300
 
 export function apenasDigitosDaConta(valor: string): string {
   return valor.replace(/\D/g, '').slice(0, DIGITOS_DA_CONTA)
@@ -15,7 +14,12 @@ export function apenasDigitosDaConta(valor: string): string {
 
 export function useAgendamento() {
   const hoje = hojeISO()
-  const dataMaxima = somarDias(hoje, DIAS_MAXIMOS)
+  const { faixas, erro: erroFaixas, recarregar: recarregarFaixas } = useFaixasTaxa()
+  const limiteDias = computed(() => diasMaximos(faixas.value))
+  // Sem a tabela ainda, a data fica sem limite superior.
+  const dataMaxima = computed(() =>
+    limiteDias.value > 0 ? somarDias(hoje, limiteDias.value) : undefined,
+  )
 
   const formulario = reactive({
     contaOrigem: '',
@@ -57,44 +61,18 @@ export function useAgendamento() {
     dataTransferencia: errosDoServidor.value.dataTransferencia ?? '',
   }))
 
-  // A taxa vem sempre do back-end: a prévia é pedida a cada mudança de valor ou data.
-  const previa = ref<PreviaTaxa | null>(null)
-  const erroPrevia = ref('')
-  const semTaxaAplicavel = ref(false)
-  const consultandoTaxa = ref(false)
-  let temporizador: ReturnType<typeof setTimeout> | undefined
-  let ultimaConsulta = 0
-
-  async function atualizarPrevia(valor: number, data: string) {
-    const consulta = ++ultimaConsulta
-    try {
-      const resposta = await consultarTaxa(valor, data)
-      if (consulta === ultimaConsulta) previa.value = resposta
-    } catch (erro) {
-      if (consulta !== ultimaConsulta) return
-      semTaxaAplicavel.value = erro instanceof ErroApi && erro.status === 422
-      erroPrevia.value =
-        erro instanceof ErroApi ? erro.message : 'Erro: não foi possível calcular a taxa.'
-    } finally {
-      if (consulta === ultimaConsulta) consultandoTaxa.value = false
-    }
-  }
-
-  watch(
-    () => [formulario.valor, formulario.dataTransferencia] as const,
-    ([valor, data]) => {
-      clearTimeout(temporizador)
-      ultimaConsulta++
-      previa.value = null
-      erroPrevia.value = ''
-      semTaxaAplicavel.value = false
-      consultandoTaxa.value = valor > 0 && data !== ''
-      if (!consultandoTaxa.value) return
-      temporizador = setTimeout(() => atualizarPrevia(valor, data), ESPERA_DA_PREVIA_MS)
-    },
+  // Prévia calculada com a tabela que veio do back-end; ele recalcula a taxa ao salvar.
+  const dias = computed(() =>
+    formulario.dataTransferencia ? diasEntre(hoje, formulario.dataTransferencia) : null,
   )
-
-  onScopeDispose(() => clearTimeout(temporizador))
+  const faixa = computed(() =>
+    dias.value === null ? null : encontrarFaixa(faixas.value, dias.value),
+  )
+  const semTaxaAplicavel = computed(
+    () => faixas.value.length > 0 && dias.value !== null && faixa.value === null,
+  )
+  const taxa = computed(() => (faixa.value ? calcularTaxa(formulario.valor, faixa.value) : 0))
+  const total = computed(() => formulario.valor + taxa.value)
 
   const podeAgendar = computed(
     () =>
@@ -102,7 +80,7 @@ export function useAgendamento() {
       contaCompleta(formulario.contaDestino) &&
       !contasIguais.value &&
       formulario.valor > 0 &&
-      previa.value !== null &&
+      faixa.value !== null &&
       !enviando.value,
   )
 
@@ -150,13 +128,16 @@ export function useAgendamento() {
 
   return {
     hoje,
+    limiteDias,
     dataMaxima,
     formulario,
     erros,
-    previa,
-    erroPrevia,
+    faixa,
+    taxa,
+    total,
     semTaxaAplicavel,
-    consultandoTaxa,
+    erroFaixas,
+    recarregarFaixas,
     podeAgendar,
     enviando,
     erroServidor,

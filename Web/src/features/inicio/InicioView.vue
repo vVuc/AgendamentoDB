@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import AppHero from './AppHero.vue'
 import TabelaTaxas from './TabelaTaxas.vue'
-import { faixasTaxa } from '@/shared/domain/faixasTaxa'
+import { useFaixasTaxa } from '@/shared/domain/useFaixasTaxa'
 
 const emit = defineEmits<{
   agendar: []
   extrato: []
 }>()
+
+const { faixas, carregando, erro, recarregar } = useFaixasTaxa()
 
 const passos = [
   {
@@ -30,7 +32,12 @@ const stack = ['Java', 'Spring Boot', 'H2', 'Vue 3']
 <template>
   <div class="inicio">
     <AppHero @agendar="emit('agendar')" @extrato="emit('extrato')">
-      <TabelaTaxas :faixas="faixasTaxa" />
+      <TabelaTaxas
+        :faixas="faixas"
+        :carregando="carregando"
+        :erro="erro"
+        @recarregar="recarregar"
+      />
     </AppHero>
 
     <section class="inicio__secao">

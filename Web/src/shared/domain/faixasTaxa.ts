@@ -1,18 +1,30 @@
+// A tabela de faixas vem do back-end (GET /api/taxas), que também recalcula a taxa ao salvar.
+// O front usa as funções abaixo só para mostrar a prévia enquanto a pessoa preenche.
 export interface FaixaTaxa {
   diasDe: number
   diasAte: number
   taxaFixa: number
   percentual: number
+  rotulo: string
 }
 
-// Tabela exibida na página inicial. O cálculo da taxa é sempre feito pelo back-end.
-export const faixasTaxa: FaixaTaxa[] = [
-  { diasDe: 0, diasAte: 0, taxaFixa: 3, percentual: 2.5 },
-  { diasDe: 1, diasAte: 10, taxaFixa: 12, percentual: 0 },
-  { diasDe: 11, diasAte: 20, taxaFixa: 0, percentual: 8.2 },
-  { diasDe: 21, diasAte: 30, taxaFixa: 0, percentual: 6.9 },
-  { diasDe: 31, diasAte: 40, taxaFixa: 0, percentual: 4.7 },
-  { diasDe: 41, diasAte: 50, taxaFixa: 0, percentual: 1.7 },
-]
+export function encontrarFaixa(faixas: FaixaTaxa[], dias: number): FaixaTaxa | null {
+  return faixas.find((faixa) => dias >= faixa.diasDe && dias <= faixa.diasAte) ?? null
+}
 
-export const DIAS_MAXIMOS = 50
+export function diasMaximos(faixas: FaixaTaxa[]): number {
+  return Math.max(0, ...faixas.map((faixa) => faixa.diasAte))
+}
+
+// Arredonda para centavos com HALF_EVEN, o mesmo modo do BigDecimal no back-end.
+function arredondarCentavos(valor: number): number {
+  const centavos = Number((valor * 100).toFixed(6))
+  const piso = Math.floor(centavos)
+  const resto = centavos - piso
+  const arredondado = resto > 0.5 || (resto === 0.5 && piso % 2 !== 0) ? piso + 1 : piso
+  return arredondado / 100
+}
+
+export function calcularTaxa(valor: number, faixa: FaixaTaxa): number {
+  return arredondarCentavos(faixa.taxaFixa + (valor * faixa.percentual) / 100)
+}

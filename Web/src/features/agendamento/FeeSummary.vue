@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import type { PreviaTaxa } from '@/shared/types/transferencia'
+import type { FaixaTaxa } from '@/shared/domain/faixasTaxa'
 import { formatarMoeda, formatarPercentual } from '@/shared/utils/formatters'
 
 defineProps<{
-  previa: PreviaTaxa
+  faixa: FaixaTaxa
+  taxa: number
+  total: number
 }>()
 </script>
 
@@ -11,19 +13,19 @@ defineProps<{
   <section class="at-fee" aria-live="polite">
     <div class="at-fee__head">
       <h3 class="at-fee__title">Resumo da taxa</h3>
-      <span class="at-fee__badge">{{ previa.rotulo }}</span>
+      <span class="at-fee__badge">{{ faixa.rotulo }}</span>
     </div>
     <div class="at-fee__row">
-      <span>Taxa fixa</span><b>{{ formatarMoeda(previa.taxaFixa) }}</b>
+      <span>Taxa fixa</span><b>{{ formatarMoeda(faixa.taxaFixa) }}</b>
     </div>
     <div class="at-fee__row">
-      <span>Percentual sobre o valor</span><b>{{ formatarPercentual(previa.percentual) }}</b>
+      <span>Percentual sobre o valor</span><b>{{ formatarPercentual(faixa.percentual) }}</b>
     </div>
     <div class="at-fee__row">
-      <span>Taxa calculada</span><b>{{ formatarMoeda(previa.taxa) }}</b>
+      <span>Taxa calculada</span><b>{{ formatarMoeda(taxa) }}</b>
     </div>
     <div class="at-fee__total">
-      <span>Total a debitar</span><strong>{{ formatarMoeda(previa.total) }}</strong>
+      <span>Total a debitar</span><strong>{{ formatarMoeda(total) }}</strong>
     </div>
   </section>
 </template>

@@ -11,13 +11,16 @@ import { formatarMoeda } from '@/shared/utils/formatters'
 
 const {
   hoje,
+  limiteDias,
   dataMaxima,
   formulario,
   erros,
-  previa,
-  erroPrevia,
+  faixa,
+  taxa,
+  total,
   semTaxaAplicavel,
-  consultandoTaxa,
+  erroFaixas,
+  recarregarFaixas,
   podeAgendar,
   enviando,
   erroServidor,
@@ -76,7 +79,7 @@ const {
         <DateField
           v-model="formulario.dataTransferencia"
           label="Data da transferência"
-          ajuda="Até 50 dias a partir de hoje"
+          :ajuda="limiteDias ? `Até ${limiteDias} dias a partir de hoje` : 'A partir de hoje'"
           :erro="erros.dataTransferencia"
           :min="hoje"
           :max="dataMaxima"
@@ -90,17 +93,17 @@ const {
         />
       </div>
 
-      <FeeSummary v-if="previa" :previa="previa" />
-      <p v-else-if="consultandoTaxa" class="agendar__calculando" role="status">
-        Calculando a taxa...
-      </p>
+      <FeeSummary v-if="faixa" :faixa="faixa" :taxa="taxa" :total="total" />
 
-      <AppAlert v-if="erroPrevia" variante="danger" :titulo="erroPrevia">
-        <template v-if="semTaxaAplicavel">
-          Transferências só podem ser agendadas para hoje ou até 50 dias a partir de hoje. Escolha
-          outra data.
-        </template>
-        <template v-else>Confira o valor e a data e tente de novo.</template>
+      <AppAlert v-if="semTaxaAplicavel" variante="danger" titulo="Erro: não há taxa aplicável">
+        Transferências só podem ser agendadas para hoje ou até {{ limiteDias }} dias a partir de
+        hoje. Escolha outra data.
+      </AppAlert>
+      <AppAlert v-if="erroFaixas" variante="danger" :titulo="erroFaixas">
+        Sem a tabela de taxas não dá para calcular a prévia.
+        <button type="button" class="agendar__repetir" @click="recarregarFaixas">
+          Tentar de novo
+        </button>
       </AppAlert>
       <AppAlert v-if="erroServidor" variante="danger" :titulo="erroServidor">
         Confira os dados e tente agendar de novo.
@@ -147,9 +150,15 @@ const {
   gap: var(--space-6);
 }
 
-.agendar__calculando {
-  margin: 0;
-  color: var(--ink-muted);
+.agendar__repetir {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .agendar__acoes {
