@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 
 import { mount } from '@vue/test-utils'
 import TabelaTaxas from '../TabelaTaxas.vue'
-import { faixasTaxa } from '../faixasTaxa'
+import { faixasTaxa } from '@/shared/domain/faixasTaxa'
 
 function textoDasLinhas() {
   const wrapper = mount(TabelaTaxas, { props: { faixas: faixasTaxa } })

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FaixaTaxa } from './faixasTaxa'
+import type { FaixaTaxa } from '@/shared/domain/faixasTaxa'
 import { formatarMoeda, formatarPercentual } from '@/shared/utils/formatters'
 
 defineProps<{

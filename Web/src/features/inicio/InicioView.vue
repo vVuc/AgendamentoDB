@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AppHero from './AppHero.vue'
 import TabelaTaxas from './TabelaTaxas.vue'
-import { faixasTaxa } from './faixasTaxa'
+import { faixasTaxa } from '@/shared/domain/faixasTaxa'
 
 const emit = defineEmits<{
   agendar: []
