@@ -1,0 +1,97 @@
+/* Agenda Transferências — classes de componente. Prefixo at-. Depende de tokens.css. */
+.at-root { font-family: var(--font-sans); color: var(--ink); background: var(--surface-page); font-size: 15px; line-height: 22px; }
+.at-num { font-variant-numeric: tabular-nums; }
+.at-root [hidden] { display: none !important; }
+
+/* Cabeçalho */
+.at-header { background: var(--wine-900); color: var(--on-wine); padding: var(--space-4) var(--space-8); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4); }
+.at-header__name { font-family: var(--font-serif); font-size: 24px; line-height: 32px; font-weight: 600; margin: 0; padding-bottom: var(--space-1); border-bottom: 1px solid var(--brass); }
+.at-header__meta { font-size: 13px; line-height: 18px; opacity: .9; }
+.at-header__nav { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+.at-header__link { appearance: none; display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 var(--space-3); border: 1px solid rgba(255, 255, 255, 0.5); border-radius: var(--radius-sm); background: transparent; color: var(--on-wine); text-decoration: none; font: 500 13px/18px var(--font-sans); letter-spacing: .02em; cursor: pointer; }
+.at-header__link:hover { background: rgba(255, 255, 255, 0.12); color: var(--on-wine); }
+.at-header__link:focus-visible { outline: 2px solid var(--on-wine); outline-offset: 2px; }
+.at-header__link svg { width: 16px; height: 16px; flex: none; }
+.at-header__link--plain { border-color: transparent; }
+.at-header__link--solid { background: var(--on-wine); color: var(--wine-900); border-color: var(--on-wine); font-weight: 600; }
+.at-header__link--solid:hover { background: var(--wine-100); color: var(--wine-900); }
+.at-header__sep { width: 1px; height: 24px; background: rgba(255, 255, 255, 0.3); margin: 0 var(--space-1); }
+.at-tabs__meta { margin-left: auto; align-self: center; font-size: 13px; line-height: 18px; color: var(--ink-muted); }
+
+/* Apresentação (Hero) */
+.at-hero { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: var(--space-8); align-items: start; }
+.at-hero__eyebrow { margin: 0; font: 500 12px/16px var(--font-sans); text-transform: uppercase; letter-spacing: .06em; color: var(--wine-700); }
+.at-hero__title { margin: var(--space-2) 0 var(--space-4); font-family: var(--font-serif); font-size: 40px; line-height: 48px; font-weight: 600; color: var(--ink); }
+.at-hero__lead { margin: 0 0 var(--space-6); font-size: 17px; line-height: 26px; color: var(--ink-muted); max-width: 52ch; }
+.at-hero__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.at-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); }
+.at-step { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: var(--space-6); }
+.at-step__num { font-family: var(--font-serif); font-size: 28px; line-height: 32px; font-weight: 600; color: var(--wine-700); }
+.at-step__title { margin: var(--space-2) 0 var(--space-1); font-size: 15px; line-height: 22px; font-weight: 600; }
+.at-step__text { margin: 0; color: var(--ink-muted); }
+.at-chips { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
+.at-chip { font: 500 13px/18px var(--font-sans); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-full); padding: var(--space-1) var(--space-3); }
+@media (max-width: 760px) { .at-hero, .at-steps { grid-template-columns: minmax(0, 1fr); } .at-hero__title { font-size: 32px; line-height: 40px; } }
+
+/* Abas */
+.at-tabs { display: flex; gap: var(--space-6); border-bottom: 1px solid var(--line); background: var(--surface); padding: 0 var(--space-8); }
+.at-tab { appearance: none; background: none; border: 0; border-bottom: 3px solid transparent; padding: var(--space-3) 0; margin-bottom: -1px; font: 500 13px/18px var(--font-sans); letter-spacing: .02em; color: var(--ink-muted); cursor: pointer; }
+.at-tab:hover { color: var(--ink); }
+.at-tab[aria-selected="true"] { color: var(--wine-700); border-bottom-color: var(--wine-700); font-weight: 600; }
+.at-tab:focus-visible { outline: 2px solid var(--wine-700); outline-offset: 2px; }
+
+/* Cartão */
+.at-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); box-shadow: var(--shadow-card); padding: var(--space-6); }
+.at-card__title { font-family: var(--font-serif); font-size: 18px; line-height: 26px; font-weight: 600; margin: 0 0 var(--space-4); }
+
+/* Botões */
+.at-btn { appearance: none; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); min-height: 40px; padding: 0 var(--space-4); border-radius: var(--radius-sm); border: 1px solid transparent; font: 600 13px/18px var(--font-sans); letter-spacing: .02em; cursor: pointer; }
+.at-btn--primary { background: var(--wine-700); color: var(--on-wine); }
+.at-btn--primary:hover { background: var(--wine-900); }
+.at-btn--secondary { background: var(--surface); color: var(--wine-700); border-color: var(--border-control); }
+.at-btn--secondary:hover { background: var(--wine-100); }
+.at-btn:focus-visible { outline: 2px solid var(--wine-700); outline-offset: 2px; }
+.at-btn:disabled, .at-btn[aria-disabled="true"] { background: var(--line); color: var(--ink-muted); border-color: transparent; cursor: not-allowed; }
+
+/* Campos */
+.at-field { display: flex; flex-direction: column; gap: var(--space-1); min-width: 0; }
+.at-field__label { font: 500 13px/18px var(--font-sans); color: var(--ink); }
+.at-field__control { display: flex; align-items: center; height: 40px; background: var(--surface); border: 1px solid var(--border-control); border-radius: var(--radius-sm); padding: 0 var(--space-3); gap: var(--space-2); }
+.at-field__control:focus-within { border-color: var(--wine-700); box-shadow: 0 0 0 1px var(--wine-700); }
+.at-field__prefix { color: var(--ink-muted); font-size: 15px; }
+.at-field__input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font: 400 15px/22px var(--font-sans); color: var(--ink); font-variant-numeric: tabular-nums; }
+.at-field__help { font-size: 12px; line-height: 16px; color: var(--ink-muted); }
+.at-field--readonly .at-field__control { background: var(--surface-page); border-style: dashed; }
+.at-field--invalid .at-field__control { border-color: var(--danger); box-shadow: 0 0 0 1px var(--danger); }
+.at-field--invalid .at-field__help { color: var(--danger); }
+.at-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
+
+/* Alertas */
+.at-alert { display: flex; gap: var(--space-3); align-items: flex-start; padding: var(--space-3) var(--space-4); border-radius: var(--radius-sm); border: 1px solid currentColor; font-size: 15px; line-height: 22px; }
+.at-alert__icon { flex: none; width: 20px; height: 20px; margin-top: 1px; }
+.at-alert__title { font-weight: 600; margin: 0; }
+.at-alert__text { margin: 0; color: var(--ink); }
+.at-alert--danger { color: var(--danger); background: var(--danger-bg); }
+.at-alert--success { color: var(--success); background: var(--success-bg); }
+.at-alert--info { color: var(--info); background: var(--info-bg); }
+
+/* Resumo da taxa */
+.at-fee { background: var(--wine-100); border: 1px solid var(--line); border-radius: var(--radius-md); padding: var(--space-4) var(--space-6); }
+.at-fee__head { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3); }
+.at-fee__title { font-family: var(--font-serif); font-size: 18px; line-height: 26px; font-weight: 600; margin: 0; }
+.at-fee__badge { font: 500 12px/16px var(--font-sans); color: var(--wine-900); border: 1px solid var(--wine-700); border-radius: var(--radius-full); padding: 2px var(--space-2); }
+.at-fee__row { display: flex; justify-content: space-between; padding: var(--space-1) 0; color: var(--ink-muted); font-variant-numeric: tabular-nums; }
+.at-fee__row b { color: var(--ink); font-weight: 600; }
+.at-fee__total { display: flex; justify-content: space-between; align-items: baseline; border-top: 1px solid var(--line); margin-top: var(--space-2); padding-top: var(--space-3); }
+.at-fee__total span { font: 500 13px/18px var(--font-sans); }
+.at-fee__total strong { font: 600 28px/36px var(--font-sans); color: var(--wine-900); font-variant-numeric: tabular-nums; }
+
+/* Tabela do extrato */
+.at-table-wrap { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); overflow-x: auto; }
+.at-table { width: 100%; border-collapse: collapse; font-size: 15px; line-height: 22px; }
+.at-table th { text-align: left; font: 500 12px/16px var(--font-sans); text-transform: uppercase; letter-spacing: .04em; color: var(--ink-muted); padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--line); background: var(--surface-page); white-space: nowrap; }
+.at-table td { padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--line); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.at-table tr:last-child td { border-bottom: 0; }
+.at-table tbody tr:hover td { background: var(--wine-100); }
+.at-table .is-num { text-align: right; }
+.at-table__empty { padding: var(--space-8) var(--space-4); text-align: center; color: var(--ink-muted); }

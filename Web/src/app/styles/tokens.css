@@ -1,0 +1,41 @@
+/* Agenda Transferências — generated from tokens.json */
+:root {
+  --wine-700: #7a1f2b;
+  --wine-900: #5c1620;
+  --wine-100: #f7eced;
+  --brass: #8c6d2f;
+  --surface: #ffffff;
+  --surface-page: #f6f3f0;
+  --ink: #1f1a1b;
+  --ink-muted: #5e5557;
+  --on-wine: #ffffff;
+  --border-control: #8a8183;
+  --line: #e2dbd8;
+  --danger: #a3201b;
+  --danger-bg: #fcebea;
+  --success: #1d6b3d;
+  --success-bg: #e9f4ed;
+  --info: #1f4f7a;
+  --info-bg: #e9f0f7;
+  --shadow-card: 0 1px 2px rgba(31, 26, 27, 0.08);
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-full: 999px;
+  --font-serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+.hero { font-family: var(--font-serif); font-size: 40px; line-height: 48px; font-weight: 600; }
+.display { font-family: var(--font-serif); font-size: 32px; line-height: 40px; font-weight: 600; }
+.title { font-family: var(--font-serif); font-size: 24px; line-height: 32px; font-weight: 600; }
+.heading { font-family: var(--font-serif); font-size: 18px; line-height: 26px; font-weight: 600; }
+.body { font-family: var(--font-sans); font-size: 15px; line-height: 22px; font-weight: 400; }
+.body-strong { font-family: var(--font-sans); font-size: 15px; line-height: 22px; font-weight: 600; }
+.label { font-family: var(--font-sans); font-size: 13px; line-height: 18px; font-weight: 500; }
+.caption { font-family: var(--font-sans); font-size: 12px; line-height: 16px; font-weight: 400; }
+.amount { font-family: var(--font-sans); font-size: 28px; line-height: 36px; font-weight: 600; }

@@ -1,0 +1,10 @@
+@import './tokens.css';
+@import './bundle.css';
+
+body {
+  margin: 0;
+}
+
+.at-root {
+  min-height: 100vh;
+}
