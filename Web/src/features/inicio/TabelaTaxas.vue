@@ -1,10 +1,22 @@
 <script setup lang="ts">
-import type { FaixaTaxa } from './faixasTaxa'
+import { computed } from 'vue'
+import { diasMaximos, type FaixaTaxa } from '@/shared/domain/faixasTaxa'
 import { formatarMoeda, formatarPercentual } from '@/shared/utils/formatters'
 
-defineProps<{
-  faixas: FaixaTaxa[]
+const props = withDefaults(
+  defineProps<{
+    faixas: FaixaTaxa[]
+    carregando?: boolean
+    erro?: string
+  }>(),
+  { carregando: false, erro: '' },
+)
+
+defineEmits<{
+  recarregar: []
 }>()
+
+const limite = computed(() => diasMaximos(props.faixas))
 
 function descreverDias(faixa: FaixaTaxa): string {
   if (faixa.diasDe === 0 && faixa.diasAte === 0) return '0 (mesmo dia)'
@@ -15,7 +27,14 @@ function descreverDias(faixa: FaixaTaxa): string {
 <template>
   <div class="tabela-taxas">
     <h3 class="tabela-taxas__titulo">Tabela de taxas</h3>
-    <div class="at-table-wrap">
+    <p v-if="erro" class="tabela-taxas__aviso" role="alert">
+      {{ erro }}
+      <button type="button" class="tabela-taxas__repetir" @click="$emit('recarregar')">
+        Tentar de novo
+      </button>
+    </p>
+    <p v-else-if="carregando" class="tabela-taxas__aviso" role="status">Carregando as taxas...</p>
+    <div v-if="faixas.length" class="at-table-wrap">
       <table class="at-table">
         <thead>
           <tr>
@@ -33,8 +52,8 @@ function descreverDias(faixa: FaixaTaxa): string {
         </tbody>
       </table>
     </div>
-    <p class="tabela-taxas__nota">
-      Acima de 50 dias não há taxa aplicável e o agendamento é bloqueado.
+    <p v-if="faixas.length" class="tabela-taxas__nota">
+      Acima de {{ limite }} dias não há taxa aplicável e o agendamento é bloqueado.
     </p>
   </div>
 </template>
@@ -59,5 +78,24 @@ function descreverDias(faixa: FaixaTaxa): string {
   font-size: 12px;
   line-height: 16px;
   color: var(--ink-muted);
+}
+.tabela-taxas__aviso {
+  margin: 0;
+  color: var(--ink-muted);
+}
+
+.tabela-taxas__aviso[role='alert'] {
+  color: var(--danger);
+}
+
+.tabela-taxas__repetir {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
 }
 </style>

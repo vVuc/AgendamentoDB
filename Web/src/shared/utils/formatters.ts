@@ -25,3 +25,18 @@ export function formatarMoeda(valor: number): string {
 export function formatarPercentual(percentual: number): string {
   return `${formatoPercentual.format(percentual)}%`
 }
+
+const formatoValorCampo = new Intl.NumberFormat('pt-BR', {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+})
+
+export function formatarValorCampo(valor: number): string {
+  return formatoValorCampo.format(valor)
+}
+
+// Lê o texto digitado no padrão brasileiro ("1.000,50") e devolve o número (1000.5).
+export function lerValor(texto: string): number {
+  const numero = Number(texto.replace(/\./g, '').replace(',', '.'))
+  return Number.isFinite(numero) ? numero : 0
+}
