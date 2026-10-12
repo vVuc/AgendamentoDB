@@ -1,6 +1,12 @@
 import { describe, it, expect } from 'vitest'
 
-import { formatarData, formatarMoeda, formatarPercentual } from '../formatters'
+import {
+  formatarData,
+  formatarMoeda,
+  formatarPercentual,
+  formatarValorCampo,
+  lerValor,
+} from '../formatters'
 
 describe('formatters', () => {
   it('formata data como dd/mm/aaaa', () => {
@@ -15,5 +21,16 @@ describe('formatters', () => {
   it('formata percentual com uma casa decimal', () => {
     expect(formatarPercentual(2.5)).toBe('2,5%')
     expect(formatarPercentual(0)).toBe('0,0%')
+  })
+
+  it('formata o valor do campo sem o símbolo', () => {
+    expect(formatarValorCampo(1000.5)).toBe('1.000,50')
+  })
+
+  it('lê o valor digitado no padrão brasileiro', () => {
+    expect(lerValor('1.000,50')).toBe(1000.5)
+    expect(lerValor('80')).toBe(80)
+    expect(lerValor('')).toBe(0)
+    expect(lerValor('abc')).toBe(0)
   })
 })
