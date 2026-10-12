@@ -14,10 +14,10 @@ const {
   dataMaxima,
   formulario,
   erros,
-  faixa,
-  taxa,
-  total,
+  previa,
+  erroPrevia,
   semTaxaAplicavel,
+  consultandoTaxa,
   podeAgendar,
   enviando,
   erroServidor,
@@ -77,6 +77,7 @@ const {
           v-model="formulario.dataTransferencia"
           label="Data da transferência"
           ajuda="Até 50 dias a partir de hoje"
+          :erro="erros.dataTransferencia"
           :min="hoje"
           :max="dataMaxima"
           @update:model-value="aoEditar"
@@ -89,11 +90,17 @@ const {
         />
       </div>
 
-      <FeeSummary v-if="faixa" :faixa="faixa" :taxa="taxa" :total="total" />
+      <FeeSummary v-if="previa" :previa="previa" />
+      <p v-else-if="consultandoTaxa" class="agendar__calculando" role="status">
+        Calculando a taxa...
+      </p>
 
-      <AppAlert v-if="semTaxaAplicavel" variante="danger" titulo="Erro: não há taxa aplicável">
-        Transferências só podem ser agendadas para hoje ou até 50 dias a partir de hoje. Escolha
-        outra data.
+      <AppAlert v-if="erroPrevia" variante="danger" :titulo="erroPrevia">
+        <template v-if="semTaxaAplicavel">
+          Transferências só podem ser agendadas para hoje ou até 50 dias a partir de hoje. Escolha
+          outra data.
+        </template>
+        <template v-else>Confira o valor e a data e tente de novo.</template>
       </AppAlert>
       <AppAlert v-if="erroServidor" variante="danger" :titulo="erroServidor">
         Confira os dados e tente agendar de novo.
@@ -138,6 +145,11 @@ const {
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
+}
+
+.agendar__calculando {
+  margin: 0;
+  color: var(--ink-muted);
 }
 
 .agendar__acoes {

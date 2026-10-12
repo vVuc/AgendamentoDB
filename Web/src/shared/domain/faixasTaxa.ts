@@ -5,8 +5,7 @@ export interface FaixaTaxa {
   percentual: number
 }
 
-// Espelha a regra de taxa do back-end, que é a fonte da verdade do cálculo.
-// No front ela serve só para exibição: a tabela da página inicial e a prévia do agendamento.
+// Tabela exibida na página inicial. O cálculo da taxa é sempre feito pelo back-end.
 export const faixasTaxa: FaixaTaxa[] = [
   { diasDe: 0, diasAte: 0, taxaFixa: 3, percentual: 2.5 },
   { diasDe: 1, diasAte: 10, taxaFixa: 12, percentual: 0 },
@@ -17,17 +16,3 @@ export const faixasTaxa: FaixaTaxa[] = [
 ]
 
 export const DIAS_MAXIMOS = 50
-
-export function encontrarFaixa(dias: number): FaixaTaxa | null {
-  return faixasTaxa.find((faixa) => dias >= faixa.diasDe && dias <= faixa.diasAte) ?? null
-}
-
-export function calcularTaxa(valor: number, faixa: FaixaTaxa): number {
-  const taxa = faixa.taxaFixa + (valor * faixa.percentual) / 100
-  return Math.round(taxa * 100) / 100
-}
-
-export function descreverFaixa(faixa: FaixaTaxa): string {
-  if (faixa.diasDe === faixa.diasAte) return 'Mesmo dia'
-  return `${faixa.diasDe} a ${faixa.diasAte} dias`
-}

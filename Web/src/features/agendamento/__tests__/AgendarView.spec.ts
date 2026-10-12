@@ -1,17 +1,28 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
 import AgendarView from '../AgendarView.vue'
-import { agendarTransferencia } from '../agendamento.api'
+import { agendarTransferencia, consultarTaxa } from '../agendamento.api'
+import { ESPERA_DA_PREVIA_MS } from '../useAgendamento'
+import { ErroApi } from '@/shared/api/http'
 
-vi.mock('../agendamento.api', () => ({ agendarTransferencia: vi.fn() }))
+vi.mock('../agendamento.api', () => ({ agendarTransferencia: vi.fn(), consultarTaxa: vi.fn() }))
 
 beforeEach(() => {
-  vi.useFakeTimers({ toFake: ['Date'] })
+  vi.useFakeTimers({ toFake: ['Date', 'setTimeout', 'clearTimeout'] })
   vi.setSystemTime(new Date(2026, 9, 12, 10))
+  vi.mocked(consultarTaxa).mockResolvedValue({
+    dias: 0,
+    rotulo: 'Mesmo dia',
+    taxaFixa: 3,
+    percentual: 2.5,
+    taxa: 28,
+    total: 1028,
+  })
 })
 
 afterEach(() => {
   vi.useRealTimers()
+  vi.resetAllMocks()
 })
 
 async function preencher(wrapper: ReturnType<typeof mount>, data: string) {
@@ -20,6 +31,8 @@ async function preencher(wrapper: ReturnType<typeof mount>, data: string) {
   await inputs[1]!.setValue('0987654321')
   await inputs[2]!.setValue('1000')
   await inputs[3]!.setValue(data)
+  await vi.advanceTimersByTimeAsync(ESPERA_DA_PREVIA_MS)
+  await flushPromises()
 }
 
 describe('AgendarView', () => {
@@ -29,7 +42,7 @@ describe('AgendarView', () => {
     expect((agendamento.element as HTMLInputElement).value).toBe('12/10/2026')
   })
 
-  it('mostra o resumo da taxa e libera o envio', async () => {
+  it('mostra o resumo da taxa vindo do servidor e libera o envio', async () => {
     const wrapper = mount(AgendarView)
     await preencher(wrapper, '2026-10-12')
     expect(wrapper.find('.at-fee__badge').text()).toBe('Mesmo dia')
@@ -38,9 +51,14 @@ describe('AgendarView', () => {
   })
 
   it('mostra erro e bloqueia quando não há taxa para a data', async () => {
+    vi.mocked(consultarTaxa).mockRejectedValue(
+      new ErroApi('Erro: não há taxa aplicável para a data informada.', 422),
+    )
     const wrapper = mount(AgendarView)
     await preencher(wrapper, '2026-12-10')
-    expect(wrapper.find('[role="alert"]').text()).toContain('Erro: não há taxa aplicável')
+    const alerta = wrapper.find('[role="alert"]').text()
+    expect(alerta).toContain('Erro: não há taxa aplicável')
+    expect(alerta).toContain('até 50 dias')
     expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeDefined()
   })
 
@@ -53,12 +71,14 @@ describe('AgendarView', () => {
       dataTransferencia: '2026-10-12',
       dataAgendamento: '2026-10-12',
       taxa: 28,
+      total: 1028,
     })
     const wrapper = mount(AgendarView)
     await preencher(wrapper, '2026-10-12')
     await wrapper.find('form').trigger('submit')
     await flushPromises()
-    expect(wrapper.find('[role="status"]').text()).toContain('Transferência agendada')
-    expect(wrapper.find('[role="status"]').text()).toContain('conta 0987654321')
+    const status = wrapper.find('.at-alert--success').text()
+    expect(status).toContain('Transferência agendada')
+    expect(status).toContain('conta 0987654321')
   })
 })
