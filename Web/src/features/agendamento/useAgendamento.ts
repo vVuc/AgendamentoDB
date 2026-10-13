@@ -8,6 +8,10 @@ import { diasEntre, hojeISO, somarDias } from '@/shared/utils/datas'
 
 const DIGITOS_DA_CONTA = 10
 
+// Mesmo teto do back-end. Até ele, o number do JavaScript guarda valor, taxa e total
+// exatos em centavos.
+export const VALOR_MAXIMO = 9999999999999.99
+
 export function apenasDigitosDaConta(valor: string): string {
   return valor.replace(/\D/g, '').slice(0, DIGITOS_DA_CONTA)
 }
@@ -55,9 +59,11 @@ export function useAgendamento() {
           ? 'Erro: a conta de destino deve ser diferente da origem'
           : (errosDoServidor.value.contaDestino ?? ''),
     valor:
-      tocados.valor && formulario.valor <= 0
-        ? 'Erro: informe um valor maior que zero'
-        : (errosDoServidor.value.valor ?? ''),
+      formulario.valor > VALOR_MAXIMO
+        ? 'Erro: o valor máximo é R$ 9.999.999.999.999,99'
+        : tocados.valor && formulario.valor <= 0
+          ? 'Erro: informe um valor maior que zero'
+          : (errosDoServidor.value.valor ?? ''),
     dataTransferencia: errosDoServidor.value.dataTransferencia ?? '',
   }))
 
@@ -80,6 +86,7 @@ export function useAgendamento() {
       contaCompleta(formulario.contaDestino) &&
       !contasIguais.value &&
       formulario.valor > 0 &&
+      formulario.valor <= VALOR_MAXIMO &&
       faixa.value !== null &&
       !enviando.value,
   )
