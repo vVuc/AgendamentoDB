@@ -11,7 +11,32 @@ A documentação do projeto está na pasta [`docs/`](docs/README.md): [visão ge
 
 ## Como inicializar o projeto
 
-### 1. Pré-requisitos
+### Com Docker (recomendado)
+
+Só é preciso ter o Git e o Docker com o Compose: o Docker Desktop no Windows e no macOS, ou o Docker Engine com o plugin `docker compose` no Linux. Java, Node e Maven não precisam estar instalados, porque a compilação acontece dentro dos containers.
+
+```sh
+git clone https://github.com/vVuc/AgendamentoDB.git
+cd AgendamentoDB
+docker compose up --build
+```
+
+A primeira execução baixa as imagens e as dependências e compila as duas partes, então pode levar alguns minutos. O front só sobe depois que a API responde. Quando o log mostrar o nginx pronto, abra http://localhost:5173.
+
+| Serviço | Endereço | O que roda |
+| --- | --- | --- |
+| `web` | http://localhost:5173 | nginx com o build do front, encaminhando `/api` para a API |
+| `backend` | http://localhost:8080 | A API, com o profile `dev` (Swagger e console do H2) |
+
+- Para rodar em segundo plano, use `docker compose up --build -d`, e para parar, `docker compose down`. No modo normal, Ctrl+C para os containers.
+- Se a porta 5173 ou 8080 estiver ocupada, crie um arquivo `.env` na raiz com `WEB_PORT=3000` e/ou `API_PORT=8081` e suba de novo.
+- O banco é em memória: ao recriar o container do `backend`, os agendamentos somem.
+
+### Sem Docker (desenvolvimento)
+
+Este é o caminho para mexer no código, com recarga automática no front e no back.
+
+#### 1. Pré-requisitos
 
 | Ferramenta | Versão | Como conferir |
 | --- | --- | --- |
@@ -23,14 +48,14 @@ O Maven não precisa estar instalado: o projeto traz o Maven Wrapper (`mvnw`), q
 
 Se houver mais de um JDK na máquina, aponte a variável `JAVA_HOME` para o JDK 11 antes de rodar o back-end.
 
-### 2. Clonar o repositório
+#### 2. Clonar o repositório
 
 ```sh
 git clone https://github.com/vVuc/AgendamentoDB.git
 cd AgendamentoDB
 ```
 
-### 3. Subir o back-end (porta 8080)
+#### 3. Subir o back-end (porta 8080)
 
 Em um terminal, a partir da raiz do projeto:
 
@@ -45,7 +70,7 @@ A API está no ar quando o log mostrar `Started TestTecnicoApplication`. Para co
 
 O profile `dev` liga o console do H2 e mostra o SQL no log. Sem ele a API funciona igual.
 
-### 4. Subir o front-end (porta 5173)
+#### 4. Subir o front-end (porta 5173)
 
 Em outro terminal, com o back-end ainda rodando:
 
@@ -57,7 +82,9 @@ npm run dev
 
 Abra http://localhost:5173. O Vite encaminha as chamadas para `/api` ao back-end em `localhost:8080`, então não há configuração de CORS nem de variável de ambiente. O `npm ci` instala exatamente as versões do `package-lock.json` e só precisa rodar de novo quando as dependências mudarem.
 
-### 5. Rodar os testes
+### Rodar os testes
+
+Os testes rodam fora do Docker e precisam do JDK 11 e do Node, como no caminho sem Docker.
 
 ```sh
 cd Backend
@@ -88,7 +115,9 @@ O build do front fica em `Web/dist/`.
 
 | Sintoma | Causa provável | Solução |
 | --- | --- | --- |
-| O front mostra erro ao carregar as taxas ou ao agendar | O back-end não está rodando | Suba o back-end (passo 3) antes de usar a tela |
+| `Cannot connect to the Docker daemon` ou `docker: command not found` | O Docker não está instalado ou não está aberto | Instale ou abra o Docker Desktop e rode o comando de novo |
+| `port is already allocated` ao subir com Docker | Outro programa usa a porta 5173 ou 8080 | Crie um `.env` na raiz com `WEB_PORT=3000` e/ou `API_PORT=8081` |
+| O front mostra erro ao carregar as taxas ou ao agendar | O back-end não está rodando | Sem Docker, suba o back-end (passo 3) antes de usar a tela. Com Docker, confira o log do serviço `backend`. |
 | `Port 8080 was already in use` | Outro programa usa a porta | Feche o programa ou rode com `"-Dspring-boot.run.arguments=--server.port=8081"`. Nesse caso, ajuste o proxy em `Web/vite.config.ts` para a mesma porta. |
 | `release version 11 not supported` ou erro de versão de classe | O Maven está usando outro JDK | Aponte `JAVA_HOME` para o JDK 11 |
 | `./mvnw: Permission denied` (Linux ou macOS) | O script perdeu a permissão de execução | `chmod +x mvnw` |
