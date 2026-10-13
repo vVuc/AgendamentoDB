@@ -24,10 +24,10 @@ describe('AppHeader', () => {
     links.forEach((link) => expect(link.attributes('rel')).toBe('noopener'))
   })
 
-  it('emite "sobre" ao clicar em Sobre', async () => {
+  it('mostra só LinkedIn, GitHub e Ver CV', () => {
     const wrapper = mount(AppHeader, { props })
-    await wrapper.find('button.at-header__link--plain').trigger('click')
-    expect(wrapper.emitted('sobre')).toHaveLength(1)
+    const textos = wrapper.findAll('.at-header__nav > *').map((item) => item.text())
+    expect(textos).toEqual(['LinkedIn', 'GitHub', 'Ver CV'])
   })
 
   it('emite "cv" ao clicar em Ver CV', async () => {
