@@ -1,10 +1,13 @@
 package com.legado.testtecnico.transferencia.api;
 
+import com.legado.testtecnico.shared.error.ErroResponse;
 import com.legado.testtecnico.transferencia.api.dto.TransferenciaRequest;
 import com.legado.testtecnico.transferencia.api.dto.TransferenciaResponse;
 import com.legado.testtecnico.transferencia.domain.Transferencia;
 import com.legado.testtecnico.transferencia.service.TransferenciaService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -34,8 +37,10 @@ public class TransferenciaController {
     @Operation(summary = "Agenda uma transferência",
             description = "A taxa e a data de agendamento são definidas pelo servidor.")
     @ApiResponse(responseCode = "201", description = "Transferência agendada")
-    @ApiResponse(responseCode = "400", description = "Dados inválidos")
-    @ApiResponse(responseCode = "422", description = "Sem taxa aplicável para a data, ou contas iguais")
+    @ApiResponse(responseCode = "400", description = "Dados inválidos",
+            content = @Content(schema = @Schema(implementation = ErroResponse.class)))
+    @ApiResponse(responseCode = "422", description = "Sem taxa aplicável para a data, ou contas iguais",
+            content = @Content(schema = @Schema(implementation = ErroResponse.class)))
     public ResponseEntity<TransferenciaResponse> agendar(@Valid @RequestBody TransferenciaRequest request) {
         Transferencia transferencia = service.agendar(
                 request.getContaOrigem(),
@@ -61,7 +66,8 @@ public class TransferenciaController {
     @GetMapping("/{id}")
     @Operation(summary = "Busca uma transferência agendada")
     @ApiResponse(responseCode = "200", description = "Transferência encontrada")
-    @ApiResponse(responseCode = "404", description = "Transferência não encontrada")
+    @ApiResponse(responseCode = "404", description = "Transferência não encontrada",
+            content = @Content(schema = @Schema(implementation = ErroResponse.class)))
     public TransferenciaResponse buscar(@PathVariable Long id) {
         return TransferenciaResponse.de(service.buscarPorId(id));
     }
