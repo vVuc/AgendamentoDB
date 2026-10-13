@@ -123,7 +123,7 @@ São dois níveis, cada um com seu status:
 
 | Nível | Onde | Status | Exemplos |
 | --- | --- | --- | --- |
-| Formato | Anotações no `TransferenciaRequest` (`@NotNull`, `@Pattern("\\d{10}")`, `@DecimalMin("0.01")`, `@Digits(13, 2)`) | 400 | conta com 9 dígitos, valor zero, campo ausente |
+| Formato | Anotações no `TransferenciaRequest` (`@NotNull`, `@Pattern("\\d{10}")`, `@DecimalMin("0.01")`, `@Digits(13, 2)`) | 400 | conta com 9 dígitos, valor zero, valor acima do teto, campo ausente |
 | Regra de negócio | Exceções que estendem `RegraNegocioException`, lançadas no serviço | 422 | contas iguais, data sem faixa de taxa |
 
 O `GlobalExceptionHandler` estende `ResponseEntityExceptionHandler` e transforma tudo em `ErroResponse` (`{mensagem, campos}`):
@@ -156,7 +156,7 @@ Nenhum valor de negócio fica nos arquivos de configuração.
 
 ## Testes
 
-São 40 testes, que rodam com `./mvnw test`.
+São 42 testes, que rodam com `./mvnw test`.
 
 | Classe | Tipo | Testes | O que cobre |
 | --- | --- | --- | --- |
@@ -164,7 +164,7 @@ São 40 testes, que rodam com `./mvnw test`.
 | `FaixaTaxaTest` | Unitário | 2 | Faixas cobrem de 0 a 50 dias sem buracos nem sobreposição; não há faixa fora disso |
 | `TransferenciaServiceTest` | Mockito com `Clock` fixo | 5 | Grava com a taxa e a data de hoje; conta os dias no fuso do Brasil perto da meia-noite; não grava com data no passado nem com contas iguais; erro ao buscar um id inexistente |
 | `TransferenciaRepositoryTest` | `@DataJpaTest` | 1 | Ordem do extrato |
-| `TransferenciaControllerTest` | `@WebMvcTest` | 12 | 201 com `Location`, lista, busca, 400 (9 dígitos, valor zero, campos ausentes, JSON malformado, data fora do ISO), 422 (contas iguais, sem faixa), 404 e 500 sem detalhes |
+| `TransferenciaControllerTest` | `@WebMvcTest` | 14 | 201 com `Location`, lista, busca, aceita o valor máximo, 400 (9 dígitos, valor zero, valor acima do máximo, campos ausentes, JSON malformado, data fora do ISO), 422 (contas iguais, sem faixa), 404 e 500 sem detalhes |
 | `TaxaControllerTest` | `@WebMvcTest` | 1 | Tabela de faixas e cabeçalho de cache |
 | `AgendamentoIntegracaoTest` | `@SpringBootTest` | 2 | Agenda e aparece no extrato com a taxa do servidor; data além de 50 dias não grava |
 | `TestTecnicoApplicationTests` | `@SpringBootTest` | 1 | O contexto sobe |
@@ -190,6 +190,6 @@ Convenções dos testes: nomes em português que descrevem o comportamento (`dev
 | Taxa calculada no servidor, tabela servida em `GET /api/taxas` | O front mostra a prévia sem repetir a tabela, e o valor gravado tem uma fonte só |
 | 400 para formato, 422 para regra de negócio | O cliente sabe se deve corrigir o formato ou escolher outro dado |
 | Contas iguais é 422 com o campo `contaDestino` | É regra de negócio, mas o front ainda consegue marcar o campo |
-| Sem valor máximo | O enunciado não pede; o limite é a precisão da coluna (13 inteiros e 2 casas) |
+| Valor máximo de R$ 9.999.999.999.999,99 | O front guarda valores como `number` do JavaScript, que só é exato até 2^53. Até esse teto, valor, taxa e total cabem em centavos sem arredondamento, e a coluna `numeric(15,2)` também. O `@Digits(13, 2)` garante o teto. |
 | H2 em memória sem Flyway | Uma tabela só, gerada pela entidade, é suficiente para o teste |
 | Swagger com springdoc | Permite testar a API sem o front |

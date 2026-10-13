@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises } from '@vue/test-utils'
-import { apenasDigitosDaConta, useAgendamento } from '../useAgendamento'
+import { VALOR_MAXIMO, apenasDigitosDaConta, useAgendamento } from '../useAgendamento'
 import { agendarTransferencia } from '../agendamento.api'
 import { ErroApi, getJson } from '@/shared/api/http'
 import { faixasDeExemplo } from '@/shared/domain/__tests__/fixtures'
@@ -98,6 +98,18 @@ describe('useAgendamento', () => {
     expect(agendamento.erros.value.contaDestino).toBe(
       'Erro: a conta de destino deve ser diferente da origem',
     )
+    expect(agendamento.podeAgendar.value).toBe(false)
+  })
+
+  it('aceita até o valor máximo e mostra o erro acima dele', async () => {
+    const agendamento = await criar()
+    preencher(agendamento, '2026-10-27')
+    agendamento.formulario.valor = VALOR_MAXIMO
+    expect(agendamento.erros.value.valor).toBe('')
+    expect(agendamento.taxa.value).toBe(820000000000)
+    expect(agendamento.podeAgendar.value).toBe(true)
+    agendamento.formulario.valor = VALOR_MAXIMO + 0.01
+    expect(agendamento.erros.value.valor).toBe('Erro: o valor máximo é R$ 9.999.999.999.999,99')
     expect(agendamento.podeAgendar.value).toBe(false)
   })
 

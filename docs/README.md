@@ -72,7 +72,7 @@ A prévia do front é só para exibição. O valor gravado é sempre o que o ser
 | --- | --- |
 | Contas com exatamente 10 dígitos | Bean Validation no back-end (400) e máscara e validação no front |
 | Conta de destino diferente da de origem | `TransferenciaService` (422, com o campo `contaDestino`) e validação no front |
-| Valor maior que zero, até 13 dígitos inteiros e 2 casas | Bean Validation no back-end (400); o front exige valor maior que zero e formata em 2 casas |
+| Valor de R$ 0,01 até R$ 9.999.999.999.999,99, com 2 casas | Bean Validation no back-end (400) e validação no front, que formata em 2 casas |
 | Data da transferência entre hoje e hoje + 50 dias | `CalculadoraTaxa` (422) e o seletor de data do front, limitado a essa faixa |
 | Data de agendamento é sempre hoje | Definida pelo servidor, nunca enviada pelo cliente |
 | Taxa pela faixa de dias, com 2 casas e HALF_EVEN | `CalculadoraTaxa` no back-end; o front repete a conta só para a prévia |
