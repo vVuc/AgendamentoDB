@@ -4,17 +4,19 @@ import AppHeader from '@/components/layout/AppHeader.vue'
 import AppTabs from '@/components/layout/AppTabs.vue'
 import PageContainer from '@/components/layout/PageContainer.vue'
 import AgendarView from '@/features/agendamento/AgendarView.vue'
+import ExtratoView from '@/features/extrato/ExtratoView.vue'
 import CvPanel from '@/features/curriculo/CvPanel.vue'
 import { curriculo } from '@/features/curriculo/curriculo'
 import InicioView from '@/features/inicio/InicioView.vue'
 import { autor } from '@/shared/config/autor'
 import { formatarData } from '@/shared/utils/formatters'
 
-type Aba = 'inicio' | 'agendar'
+type Aba = 'inicio' | 'agendar' | 'extrato'
 
 const abas: { id: Aba; rotulo: string }[] = [
   { id: 'inicio', rotulo: 'Início' },
   { id: 'agendar', rotulo: 'Agendar' },
+  { id: 'extrato', rotulo: 'Extrato' },
 ]
 
 const abaAtiva = ref<Aba>('inicio')
@@ -36,8 +38,13 @@ function irPara(aba: Aba) {
     />
     <AppTabs v-model="abaAtiva" :abas="abas" :hoje="hoje" />
     <PageContainer>
-      <InicioView v-if="abaAtiva === 'inicio'" @agendar="irPara('agendar')" />
+      <InicioView
+        v-if="abaAtiva === 'inicio'"
+        @agendar="irPara('agendar')"
+        @extrato="irPara('extrato')"
+      />
       <AgendarView v-else-if="abaAtiva === 'agendar'" />
+      <ExtratoView v-else />
     </PageContainer>
     <CvPanel v-if="cvAberto" :curriculo="curriculo" @fechar="cvAberto = false" />
   </div>
