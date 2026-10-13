@@ -7,6 +7,8 @@ Sistema de agendamento de transferências financeiras, feito como teste técnico
 | `Backend/` | API REST | Java 11, Spring Boot 2.7, Spring Data JPA, H2, Bean Validation, Lombok, springdoc-openapi |
 | `Web/` | Interface | Vue 3, TypeScript, Vite |
 
+A documentação do projeto está na pasta [`docs/`](docs/README.md): [visão geral](docs/README.md), [API](docs/api.md), [back-end](docs/backend.md) e [front-end](docs/frontend.md).
+
 ## Como inicializar o projeto
 
 ### 1. Pré-requisitos
