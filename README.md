@@ -7,40 +7,96 @@ Sistema de agendamento de transferências financeiras, feito como teste técnico
 | `Backend/` | API REST | Java 11, Spring Boot 2.7, Spring Data JPA, H2, Bean Validation, Lombok, springdoc-openapi |
 | `Web/` | Interface | Vue 3, TypeScript, Vite |
 
-## Como rodar
+## Como inicializar o projeto
 
-Pré-requisitos: JDK 11 e Node 22.18 ou mais novo. O Maven não precisa estar instalado, porque o projeto traz o Maven Wrapper.
+### 1. Pré-requisitos
 
-**1. Back-end** (porta 8080)
+| Ferramenta | Versão | Como conferir |
+| --- | --- | --- |
+| JDK | 11 | `java -version` |
+| Node.js (já traz o npm) | 22.18 ou mais novo | `node -v` |
+| Git | qualquer versão recente | `git --version` |
+
+O Maven não precisa estar instalado: o projeto traz o Maven Wrapper (`mvnw`), que baixa a versão certa na primeira execução. Também não é preciso instalar banco de dados, porque o H2 roda em memória dentro da aplicação. A primeira execução de cada parte baixa as dependências, então precisa de internet e pode levar alguns minutos.
+
+Se houver mais de um JDK na máquina, aponte a variável `JAVA_HOME` para o JDK 11 antes de rodar o back-end.
+
+### 2. Clonar o repositório
+
+```sh
+git clone https://github.com/vVuc/AgendamentoDB.git
+cd AgendamentoDB
+```
+
+### 3. Subir o back-end (porta 8080)
+
+Em um terminal, a partir da raiz do projeto:
 
 ```sh
 cd Backend
-./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+./mvnw spring-boot:run "-Dspring-boot.run.profiles=dev"
 ```
 
-No Windows, use `mvnw.cmd` no lugar de `./mvnw`. O profile `dev` liga o console do H2 e o SQL no log; sem ele a API funciona igual.
+No Windows, troque `./mvnw` por `.\mvnw.cmd` (PowerShell) ou `mvnw.cmd` (Prompt de Comando). Mantenha as aspas no `-D`: sem elas o PowerShell quebra o argumento no ponto.
 
-**2. Front-end** (porta 5173)
+A API está no ar quando o log mostrar `Started TestTecnicoApplication`. Para conferir, abra http://localhost:8080/api/taxas no navegador: a resposta é a tabela com as 6 faixas de taxa.
+
+O profile `dev` liga o console do H2 e mostra o SQL no log. Sem ele a API funciona igual.
+
+### 4. Subir o front-end (porta 5173)
+
+Em outro terminal, com o back-end ainda rodando:
 
 ```sh
 cd Web
-npm install
+npm ci
 npm run dev
 ```
 
-Abra http://localhost:5173. Em desenvolvimento, o Vite encaminha `/api` para o back-end, então não há configuração de CORS.
+Abra http://localhost:5173. O Vite encaminha as chamadas para `/api` ao back-end em `localhost:8080`, então não há configuração de CORS nem de variável de ambiente. O `npm ci` instala exatamente as versões do `package-lock.json` e só precisa rodar de novo quando as dependências mudarem.
 
-**Testes**
+### 5. Rodar os testes
 
 ```sh
-cd Backend && ./mvnw test
-cd Web && npm run test:unit -- --run
+cd Backend
+./mvnw test
 ```
+
+```sh
+cd Web
+npm run test:unit -- --run
+```
+
+### Gerar a versão de produção (opcional)
+
+```sh
+cd Backend
+./mvnw package
+java -jar target/testTecnico-0.0.1-SNAPSHOT.jar
+```
+
+```sh
+cd Web
+npm run build
+```
+
+O build do front fica em `Web/dist/`.
+
+### Problemas comuns
+
+| Sintoma | Causa provável | Solução |
+| --- | --- | --- |
+| O front mostra erro ao carregar as taxas ou ao agendar | O back-end não está rodando | Suba o back-end (passo 3) antes de usar a tela |
+| `Port 8080 was already in use` | Outro programa usa a porta | Feche o programa ou rode com `"-Dspring-boot.run.arguments=--server.port=8081"`. Nesse caso, ajuste o proxy em `Web/vite.config.ts` para a mesma porta. |
+| `release version 11 not supported` ou erro de versão de classe | O Maven está usando outro JDK | Aponte `JAVA_HOME` para o JDK 11 |
+| `./mvnw: Permission denied` (Linux ou macOS) | O script perdeu a permissão de execução | `chmod +x mvnw` |
+| Os agendamentos somem ao reiniciar | O banco é em memória, como pede o enunciado | Comportamento esperado |
 
 ## Endereços úteis
 
 | Endereço | O que é |
 | --- | --- |
+| http://localhost:5173 | Aplicação (front-end) |
 | http://localhost:8080/swagger-ui.html | Documentação interativa da API |
 | http://localhost:8080/h2-console | Console do banco (profile `dev`; JDBC URL `jdbc:h2:mem:agendamentodb`, usuário `sa`, sem senha) |
 
