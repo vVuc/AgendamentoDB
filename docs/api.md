@@ -14,7 +14,7 @@ Base: `http://localhost:8080`. Todas as rotas ficam sob `/api`, recebem e devolv
 | Tipo | Formato | Exemplo |
 | --- | --- | --- |
 | Conta | Texto com exatamente 10 dígitos. É texto para manter os zeros à esquerda. | `"0001234567"` |
-| Valor em reais | Número JSON, até 13 dígitos inteiros e 2 casas decimais | `1000.00` |
+| Valor em reais | Número JSON, de 0,01 até 9.999.999.999.999,99, com até 2 casas decimais | `1000.00` |
 | Data | Texto ISO `aaaa-mm-dd` | `"2026-10-20"` |
 | Percentual | Número como aparece na tabela, não como fração | `8.2` significa 8,2% |
 
@@ -28,7 +28,7 @@ Corpo:
 | --- | --- | --- |
 | `contaOrigem` | sim | 10 dígitos |
 | `contaDestino` | sim | 10 dígitos, diferente de `contaOrigem` |
-| `valor` | sim | maior ou igual a 0,01, até 13 dígitos inteiros e 2 casas, sem valor máximo |
+| `valor` | sim | de 0,01 até 9.999.999.999.999,99, com até 2 casas decimais |
 | `dataTransferencia` | sim | de hoje até hoje + 50 dias |
 
 ```http
@@ -75,7 +75,7 @@ Mensagens por campo no 400 de validação:
 | `contaDestino` | sem 10 dígitos | `Erro: a conta de destino deve ter 10 dígitos.` |
 | `valor` | ausente | `Erro: informe o valor.` |
 | `valor` | zero ou negativo | `Erro: o valor deve ser maior que zero.` |
-| `valor` | mais de 13 dígitos inteiros ou mais de 2 casas | `Erro: o valor deve ter até 13 dígitos inteiros e 2 casas decimais.` |
+| `valor` | acima de 9.999.999.999.999,99 ou com mais de 2 casas | `Erro: o valor deve ser de até R$ 9.999.999.999.999,99, com no máximo 2 casas decimais.` |
 | `dataTransferencia` | ausente | `Erro: informe a data da transferência.` |
 
 Quando um campo tem mais de um problema, vem só a primeira mensagem dele.
@@ -137,7 +137,7 @@ Todo erro da API, inclusive os do próprio Spring (405, 415 e outros), tem o mes
 
 | Status | Significado nesta API |
 | --- | --- |
-| 400 | O formato da requisição está errado: campo ausente, conta com outro tamanho, valor fora da precisão, JSON ou data malformados |
+| 400 | O formato da requisição está errado: campo ausente, conta com outro tamanho, valor acima do teto ou com mais de 2 casas, JSON ou data malformados |
 | 404 | A transferência pedida não existe |
 | 405, 415 | Método HTTP ou `Content-Type` não suportados |
 | 422 | O formato está certo, mas a regra de negócio não deixa agendar: contas iguais ou data sem faixa de taxa |

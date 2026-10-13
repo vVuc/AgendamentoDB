@@ -31,8 +31,11 @@ public class TransferenciaRequest {
 
     @NotNull(message = "Erro: informe o valor.")
     @DecimalMin(value = "0.01", message = "Erro: o valor deve ser maior que zero.")
-    @Digits(integer = 13, fraction = 2, message = "Erro: o valor deve ter até 13 dígitos inteiros e 2 casas decimais.")
-    @Schema(example = "1000.00")
+    // Teto de R$ 9.999.999.999.999,99: o front guarda o valor como number do JavaScript, que só é exato até 2^53.
+    // Até esse teto, valor, taxa e total cabem em centavos sem arredondamento, e a coluna numeric(15,2) também.
+    @Digits(integer = 13, fraction = 2,
+            message = "Erro: o valor deve ser de até R$ 9.999.999.999.999,99, com no máximo 2 casas decimais.")
+    @Schema(example = "1000.00", maximum = "9999999999999.99")
     private BigDecimal valor;
 
     @NotNull(message = "Erro: informe a data da transferência.")

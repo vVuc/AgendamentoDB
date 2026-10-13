@@ -88,6 +88,7 @@ Formulário com conta de origem, conta de destino, valor, data da transferência
 | Conta com menos de 10 dígitos | Mostra o erro quando a pessoa sai do campo. A máscara já aceita só dígitos, até 10. |
 | Contas iguais | Mostra o erro na conta de destino assim que as duas estão completas |
 | Valor zero | Mostra o erro quando a pessoa sai do campo |
+| Valor acima de R$ 9.999.999.999.999,99 | Mostra o erro na hora. O teto é o mesmo do back-end e fica em `VALOR_MAXIMO`, em `useAgendamento.ts`. |
 | Data sem faixa de taxa | Esconde o resumo e mostra "Erro: não há taxa aplicável". O seletor de data já vai só de hoje até hoje + 50 dias. |
 | Tabela de taxas não carregou | Mostra o erro com "Tentar de novo"; sem a tabela não há prévia |
 | Formulário incompleto ou inválido | O botão "Agendar transferência" fica desabilitado |

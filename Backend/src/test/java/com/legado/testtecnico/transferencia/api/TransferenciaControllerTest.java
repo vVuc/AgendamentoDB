@@ -103,6 +103,30 @@ class TransferenciaControllerTest {
     }
 
     @Test
+    void deveAceitarOValorMaximo() throws Exception {
+        when(service.agendar(anyString(), anyString(), eq(new BigDecimal("9999999999999.99")), eq(DATA_TRANSFERENCIA)))
+                .thenReturn(transferenciaGravada(1L));
+
+        mockMvc.perform(post("/api/transferencias")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(corpo("0001234567", "0007654321", "9999999999999.99", "2026-10-20")))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void deveRecusarValorAcimaDoMaximoSemChamarOServico() throws Exception {
+        String mensagem = "Erro: o valor deve ser de até R$ 9.999.999.999.999,99, com no máximo 2 casas decimais.";
+
+        mockMvc.perform(post("/api/transferencias")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(corpo("0001234567", "0007654321", "10000000000000.00", "2026-10-20")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.campos.valor").value(mensagem));
+
+        verifyNoInteractions(service);
+    }
+
+    @Test
     void deveApontarTodosOsCamposAusentes() throws Exception {
         mockMvc.perform(post("/api/transferencias")
                         .contentType(MediaType.APPLICATION_JSON)

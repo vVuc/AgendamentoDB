@@ -178,6 +178,7 @@ Taxa = fixa + valor × percentual, com 2 casas e arredondamento HALF_EVEN. Uma d
 - **Dinheiro em `BigDecimal`.** Valores nunca passam por `double`, e o arredondamento acontece num único ponto, a `CalculadoraTaxa`.
 - **"Hoje" no fuso de Brasília.** A data vem de um `Clock` injetado no fuso `America/Sao_Paulo`, para não virar o dia errado perto da meia-noite num servidor em UTC. Nos testes, o `Clock` é fixo.
 - **Contas como texto.** Assim os zeros à esquerda dos 10 dígitos são preservados.
+- **Valor máximo de R$ 9.999.999.999.999,99.** O front guarda valores como `number` do JavaScript, que só é exato até 2^53. Até esse teto, valor, taxa e total ficam exatos até o centavo.
 - **400 para formato, 422 para regra de negócio.** Contas iguais e data sem faixa são regras de negócio. O erro de contas iguais traz o campo `contaDestino`, para o front marcar o campo.
 - **Pacotes por funcionalidade.** O back-end segue a mesma ideia do `features/` do front: `transferencia/api`, `service`, `domain`, `repository`, e `shared` para erros e configuração.
 - **Fora do escopo:** autenticação, saldo e execução da transferência na data, edição ou cancelamento, paginação do extrato, banco persistente e deploy.
